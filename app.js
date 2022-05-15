@@ -23,7 +23,7 @@ app.use(cors())
 
 
 app.listen(app.get('port'),()=>{
-console.log("hello");
+console.log("app listining to port::",port);
 });
 
 
