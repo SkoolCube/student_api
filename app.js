@@ -6,7 +6,7 @@ const pageRouter = require('./routes/pagerouting');
 const bcrypt=require("bcrypt")
 const app=express();
 
-app.set('port',(process.env.PORT || 5000))
+app.set('port',(process.env.PORT || 8080))
 app.use(express.json()); 
 app.use(express.urlencoded( { extended : false}));
 var cors = require('cors')
@@ -23,7 +23,7 @@ app.use(cors())
 
 
 app.listen(app.get('port'),()=>{
-console.log("app listining to port::",port);
+console.log("app listining to port::",app.get('port'));
 });
 
 
