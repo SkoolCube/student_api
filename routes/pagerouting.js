@@ -50,6 +50,7 @@ try{
     result=null
 //login validation method
 user.login(req.body.userName,req.body.password,function(result){ 
+    console.log('result.userData::',result.userData);
     user.getImsbean(result.userData.compId,function(imsBean){
     //sendig response 
     if(result.code===200){
