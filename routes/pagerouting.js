@@ -44,31 +44,30 @@ router.get('/',  (req, res, next) => {
 
 //Login Function 
 router.post('/login',(req,res,next)=>{
-    res.send("This is your log in page");
 //checking username or password are undefined or not
-// console.log("helloooooo");
-// try{
-//     result=null
-// //login validation method
-// user.login(req.body.userName,req.body.password,function(result){ 
-//     user.getImsbean(result.userData.compId,function(imsBean){
-//     //sendig response 
-//     if(result.code===200){
-//         result["imsBean"]=imsBean; 
-//         let payload = {subject:result}
-//         token = jwt.sign(payload,'secreatkey');
-//         result["auth-token"]=token;
-//         res.send(result);
-//     }else{
-//         res.send(result)
-//         console.log("res in else ::",result)
-//     }
+console.log("helloooooo");
+try{
+    result=null
+//login validation method
+user.login(req.body.userName,req.body.password,function(result){ 
+    user.getImsbean(result.userData.compId,function(imsBean){
+    //sendig response 
+    if(result.code===200){
+        result["imsBean"]=imsBean; 
+        let payload = {subject:result}
+        token = jwt.sign(payload,'secreatkey');
+        result["auth-token"]=token;
+        res.send(result);
+    }else{
+        res.send(result)
+        console.log("res in else ::",result)
+    }
 
-//     });
-// });
-//     }catch(err){
-//         console.log("username&password empty",err);
-// }
+    });
+});
+    }catch(err){
+        console.log("username&password empty",err);
+}
 })
 
 function getUserData(req,res,next){
