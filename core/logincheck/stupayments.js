@@ -127,10 +127,8 @@ Stupayments.prototype = {
                 stuRecWiseMap.set(stuPaidDetails[stuInc].recNo,recwiseamt+stuPaidDetails[stuInc].amount)
                 stuRecDateMap.set(stuPaidDetails[stuInc].recNo,date.format(stuPaidDetails[stuInc].date,'YYYY/MM/DD')+"~"+stuPaidDetails[stuInc].payMode)
               }
-              console.log("stuRecWiseMap ::",stuRecWiseMap) 
               var studentReceiptDet = []
               for(const [key,value] of stuRecWiseMap){
-                console.log("key ::",key)
                  studentReceiptDet.push({
                   "recNo":key,
                   "amount":value,
@@ -139,7 +137,6 @@ Stupayments.prototype = {
                  });
                 
               }
-           console.log("studentReceiptDet ::",studentReceiptDet) 
             balance=fee-concs-paid;
             
             studentFeeDet={
@@ -149,7 +146,6 @@ Stupayments.prototype = {
               "balance":balance
             }
             
-            console.log("studentFeeDet ::",studentFeeDet)
             callback({
               "code":200,
              "success":"Fetched data from Income table",

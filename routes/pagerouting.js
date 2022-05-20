@@ -61,7 +61,6 @@ user.login(req.body.userName,req.body.password,function(result){
         res.send(result);
     }else{
         res.send(result)
-        console.log("res in else ::",result)
     }
 
     });
@@ -72,13 +71,11 @@ user.login(req.body.userName,req.body.password,function(result){
 })
 
 function getUserData(req,res,next){
-   console.log("data :",req.userId.sno)
 
 }
 
 router.get('/stuprofile',verifyToken,(req,res,callback)=>{
     stupaymentdetails.stufeedet(req,res,function(result){ 
-        console.log("resp ::",result)
         result['auth-token']=req.headers.authorization;
         res.send(result)
     })
@@ -86,7 +83,6 @@ router.get('/stuprofile',verifyToken,(req,res,callback)=>{
 
 router.get('/paymentDetails',verifyToken,(req,res,callback)=>{
     stupaymentdetails.stufeedet(req,res,function(result){ 
-        console.log("resp ::",result)
         result['auth-token']=req.headers.authorization;
         res.send(result)
     })
@@ -94,10 +90,8 @@ router.get('/paymentDetails',verifyToken,(req,res,callback)=>{
 
 // Exam Details
 router.get('/exam',verifyToken,(req,res,callback)=>{
-    console.log("req::",req.userId.userData.sno);
     stuYear.getStuAcadYear(req,res,function(acadResult){ 
     acadResult['auth-token']=req.headers.authorization;
-    console.log("acadResult::",acadResult);
     exam.examDetails(acadResult,res,function(result){ 
         res.send(result);
           
@@ -120,7 +114,7 @@ router.get('/stuAttDetails',verifyToken,(req,res,callback)=>{
     })
 })
 
-//Student Attendance Details
+//Student Notifications
 router.get('/notify',verifyToken,(req,res,callback)=>{
     //Monthwise student attendance 
     stunotices.notices(req,res,function(result){ 
