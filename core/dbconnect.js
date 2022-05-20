@@ -2,9 +2,9 @@ const util = require('util');
 const mysql = require('mysql');
 
 const dbconnect = mysql.createPool({
-    host: '127.0.0.1',
-    user: 'root', 
-    password: 'root',
+    host: '103.145.36.142',
+    user: 'tapasya_admin', 
+    password: 'sQtI9=xDtFE&',
     database: 'tapasya_db',
     port:'3306'
 });
