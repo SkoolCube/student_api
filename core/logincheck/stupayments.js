@@ -24,7 +24,6 @@ Stupayments.prototype = {
     feeByclsParams.push(userData.userId.userData.feeCatg);
     
      let sql = await `SELECT  * from Feesesbycls where compId=? and cls=? and (sec=? or sec=0) and deptRef=? and acadYear=? and feeCatg=?`;
-     
     pool.query(sql,feeByclsParams,function(err,feeByClsData){
          if (err) {
             callback({
@@ -74,24 +73,22 @@ Stupayments.prototype = {
                 for(let tempterm=0;tempterm<term;tempterm++){
                    
                     if(tempterm===0)
-                    feeByClsMap.set(feeByStuData[i].catg+""+(tempterm+1)+""+feeByStuData[i].feeType,feeByStuData[i].amount1);
+                    feeByClsMap.set(feeByStuData[i].catg+"~"+(tempterm+1)+"~"+feeByStuData[i].feeType,feeByStuData[i].amount1);
                     else if(tempterm===1)
-                    feeByClsMap.set(feeByStuData[i].catg+""+tempterm+1+""+feeByStuData[i].feeType,feeByStuData[i].amount2);
+                    feeByClsMap.set(feeByStuData[i].catg+"~"+tempterm+1+"~"+feeByStuData[i].feeType,feeByStuData[i].amount2);
                     else if(tempterm===2)
-                    feeByClsMap.set(feeByStuData[i].catg+""+tempterm+1+""+feeByStuData[i].feeType,feeByStuData[i].amount3);
+                    feeByClsMap.set(feeByStuData[i].catg+"~"+tempterm+1+"~"+feeByStuData[i].feeType,feeByStuData[i].amount3);
                     
                 }
 
                  }
 
                  
-
-                for(const [key,value] of feeByClsMap){
-                    console.log("type ::",key.split('~')[2])
+                for(const [key,value] of feeByClsMap){ 
                     if(key.split('~')[2]==='fee'){
                         fee+=value;
                     }
-                    else if(key.split('')[2]==='concs' || key.split('')[2]==='schlr' || key.split('~')[2]==='brDisc'){
+                    else if(key.split('~')[2]==='concs' || key.split('~')[2]==='schlr' || key.split('~')[2]==='brDisc'){
                         concs+=value;
                     }
 
@@ -134,6 +131,7 @@ Stupayments.prototype = {
                   "amount":value,
                   "date":stuRecDateMap.get(key).split('~')[0],
                   "paymode":stuRecDateMap.get(key).split('~')[1],
+
                  });
                 
               }
@@ -143,7 +141,8 @@ Stupayments.prototype = {
               "fee":fee,
               "concs":concs,
               "paid":paid,
-              "balance":balance
+              "balance":balance,
+              "stuRef":userData.userId.userData.sno
             }
             
             callback({
