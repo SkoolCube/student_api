@@ -3,10 +3,14 @@ const session = require('express-session');
 const convert = require('xml-js');
 const jwt = require('jsonwebtoken');
 const pageRouter = require('./routes/pagerouting');
-const bcrypt=require("bcrypt")
+const bcrypt=require("bcrypt");
+var _ = require('lodash');
+var dns = require('dns');
+var http = require('http');
+var url = require('url');
 const app=express();
 
-app.set('port',(process.env.PORT || 8080))
+app.set('port',(process.env.PORT || 5000))
 app.use(express.json()); 
 app.use(express.urlencoded( { extended : false}));
 var cors = require('cors')
@@ -22,9 +26,9 @@ app.use(cors())
 // }));
 
 
-app.listen(app.get('port'),()=>{
-console.log("app listining to port::",app.get('port'));
-});
+app.listen(app.get('port'),'0.0.0.0',()=>{
+    console.log("app listining to port::",app.get('port'));
+    });
 
 
 app.use('/', pageRouter);

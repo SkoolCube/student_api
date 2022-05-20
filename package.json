@@ -20,6 +20,7 @@
     "express-session": "^1.17.1",
     "jsonwebtoken": "^8.5.1",
     "mysql": "^2.18.1",
+    "node-ec2-metadata": "^0.0.5",
     "store2": "^2.13.2",
     "xml-js": "^1.6.11"
   },

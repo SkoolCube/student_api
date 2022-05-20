@@ -118,6 +118,18 @@ Stupayments.prototype = {
             console.log("paid ::",paid)
             balance=fee-concs-paid;
             console.log("balance ::",balance)
+            paymentdata={
+              "fee":fee,
+              "concs":concs,
+              "paid":paid,
+              "balance":balance
+            }
+            callback({
+              "code":200,
+             "success":"Done",
+             "paymentdata":paymentdata
+            })
+
          }
      })
 
