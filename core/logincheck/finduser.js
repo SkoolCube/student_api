@@ -12,6 +12,7 @@ User.prototype = {
     let sql = await `SELECT c.cls as clsName,sec.section as secName,d.dept as deptName,s.sno,s.cls,s.sec,s.deptRef,s.compId,rollNo,nameF,nameL,mobF,fathName,gender,ph,dob,addr,nation,dateJ,email,marketSrc,followup,dateL,moles,hstl,trpt,uid,pwd,aadharNo,resvNo,feeCatg,s.acadYear FROM Students s,Classes c,Sections sec,Departments d WHERE uid = ? and s.cls=c.sno and s.sec=sec.sno and s.deptRef=d.sno and status='active'`;
     console.log("sql::",sql);
     pool.query(sql,username,function(err,usrDet){
+      console.log
         if (err) {
             callback({
               "code":400,

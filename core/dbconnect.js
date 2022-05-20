@@ -5,7 +5,8 @@ const dbconnect = mysql.createPool({
     host: 'localhost',
     user: 'root', 
     password: 'root',
-    database: 'tapasya_db'
+    database: 'tapasya_db',
+    port:'3306'
 });
 
 dbconnect.getConnection((err, connection) => {
