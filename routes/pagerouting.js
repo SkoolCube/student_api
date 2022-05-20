@@ -38,7 +38,7 @@ function verifyToken(req,res,next) {
 }
 
 
-router.get('/', verifyToken, (req, res, next) => {
+router.get('/',  (req, res, next) => {
     res.send("hello everyone");
 })
 
