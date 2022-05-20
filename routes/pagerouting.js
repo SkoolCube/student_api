@@ -9,28 +9,30 @@ const finduser=require("../core/logincheck/finduser");
 const stupayments=require("../core/logincheck/stupayments");
 const exams = require("../core/exams_results/exams");
 const stuAcadYear = require("../core/common/getStuYear");
-const stuatt = require("../core/stuatt/stuattendance");
+const stuatt=require("../core/stuatt/stuattendance");
+const stunotify=require("../core/common/stunotices");
+
 const user = new finduser();
 const stupaymentdetails = new stupayments();
 const exam = new exams();
 const stuYear = new stuAcadYear();
-const stuattendance=new stuatt();
-
+const stuattdetails = new stuatt();
+const stunotices = new stunotify();
 //This function is to verify the token
 
 function verifyToken(req,res,next) {
     
     if(!req.headers.authorization) {
-        return res.status(401).send('No token Provied')
+        return res.status(401).send('Unauthorized Request')
     }
     let token = req.headers.authorization.split(' ')[1]
     
     if(token==='null') {
-       return res.status(401).send('No token Provied')
+       return res.status(401).send('Unauthorized Request')
     }
     let payload = jwt.verify(token, 'secreatkey');
     if(!payload) {
-        return res.status(401).send('No token Provied')
+        return res.status(401).send('Unauthorized Request')
     }
     req.userId = payload.subject;
    // console.log("uid ::",req.userId)
@@ -38,19 +40,17 @@ function verifyToken(req,res,next) {
 }
 
 
-router.get('/',  (req, res, next) => {
+router.get('/', verifyToken, (req, res, next) => {
     res.send("hello everyone");
 })
 
 //Login Function 
 router.post('/login',(req,res,next)=>{
 //checking username or password are undefined or not
-console.log("helloooooo");
 try{
     result=null
 //login validation method
 user.login(req.body.userName,req.body.password,function(result){ 
-    console.log('result.userData::',result.code);
     user.getImsbean(result.userData.compId,function(imsBean){
     //sendig response 
     if(result.code===200){
@@ -76,28 +76,20 @@ function getUserData(req,res,next){
 
 }
 
+router.get('/stuprofile',verifyToken,(req,res,callback)=>{
+    stupaymentdetails.stufeedet(req,res,function(result){ 
+        console.log("resp ::",result)
+        result['auth-token']=req.headers.authorization;
+        res.send(result)
+    })
+})
 
 router.get('/paymentDetails',verifyToken,(req,res,callback)=>{
     stupaymentdetails.stufeedet(req,res,function(result){ 
         console.log("resp ::",result)
-        result["auth-token"]=req.headers.authorization;
-        console.log("header ::",req.headers.authorization)
+        result['auth-token']=req.headers.authorization;
         res.send(result)
     })
-
-    
-})
-
-
-
-router.get('/stuattendance',verifyToken,(req,res,callback)=>{
-    stuattendance.stuatt(req,res,function(result){ 
-        console.log("resp ::",result)
-        result["auth-token"]=req.headers.authorization;
-        res.send(result)
-    })
-
-    
 })
 
 // Exam Details
@@ -115,4 +107,25 @@ router.get('/exam',verifyToken,(req,res,callback)=>{
     
     
 })
+//Student Attendance Details
+router.get('/stuAttDetails',verifyToken,(req,res,callback)=>{
+    //Monthwise student attendance 
+    stuattdetails.stuAttdet(req,res,function(result){ 
+         //Yearwise student attendance 
+        stuattdetails.stuYearAttdet(req,res,function(yearResult){
+            result["yearWise"]=yearResult
+            result["auth-token"]=req.headers.authorization
+            res.send(result)
+        })
+    })
+})
+
+//Student Attendance Details
+router.get('/notify',verifyToken,(req,res,callback)=>{
+    //Monthwise student attendance 
+    stunotices.notices(req,res,function(result){ 
+        res.send(result)
+    })
+})
+
 module.exports = router;
