@@ -2,7 +2,7 @@ const util = require('util');
 const mysql = require('mysql');
 
 const dbconnect = mysql.createPool({
-    host: 'localhost',
+    host: '127.0.0.1',
     user: 'root', 
     password: 'root',
     database: 'tapasya_db',
