@@ -10,6 +10,7 @@ Stupayments.prototype = {
         let feeByClsMap=new Map();
         let stuRecWiseMap=new Map();
         let stuCatgWiseMap=new Map();
+        let stuFeeeHaedMap=new Map();
         let fee=0;
         let concs=0;
         let paid=0;
@@ -121,6 +122,21 @@ Stupayments.prototype = {
                 catgWiseAmt=0;
                 stuCatgWiseMap.set(stuPaidDetails[stuInc].recNo+"~"+stuPaidDetails[stuInc].printHead,catgWiseAmt+stuPaidDetails[stuInc].amount)
               }
+              let recNo=null;
+              var stuCatgDet = []
+              for(const [key , value] of stuCatgWiseMap){
+                recNo=key.split("~")[0];
+                stuCatgDet=stuFeeeHaedMap.get(recNo);
+                if(stuCatgDet==null || stuCatgDet=='')
+                stuCatgDet = [];
+                stuCatgDet.push({
+                 "Feehead" :key.split("~")[1],
+                 "catgAmt" :value
+                }) 
+
+               stuFeeeHaedMap.set(key.split("~")[0],stuCatgDet)
+              }
+              
 
               var studentReceiptDet = []
               for(const [key,value] of stuRecWiseMap){
@@ -129,17 +145,7 @@ Stupayments.prototype = {
                   "amount":value,
                   "date":stuRecDateMap.get(key).split('~')[0],
                   "paymode":stuRecDateMap.get(key).split('~')[1],
-
-                 });
-                
-              }
-
-              var studentCatgDet = []
-              for(const [key,value] of stuCatgWiseMap){
-                studentCatgDet.push({
-                  "receiptNo":key.split("~")[0], 
-                  "feehead":key.split("~")[1],
-                  "amount":value
+                  "current_payments": stuFeeeHaedMap.get(key)
                  });
                 
               }
@@ -159,7 +165,6 @@ Stupayments.prototype = {
              "success":"Fetched data from Income table",
              "feeData":studentFeeDet,
              "recieptWiseData":studentReceiptDet,
-             "studentCatgDet":studentCatgDet
             })
          }
          else{
