@@ -41,17 +41,12 @@ Stupayments.prototype = {
                     feeByClsMap.set(feeByClsData[i].catgRef+"~"+feeByClsData[i].term+"~schlr",feeByClsData[i].schlr);
                   }
         }
-        else{
-          callback({
-            "code":200,
-           "success":"No data found in Feesesbycls table for this student"
-          })
-         }
+        
      
      feeByStuParams=[];
      feeByStuParams.push(userData.userId.userData.sno);
      feeByStuParams.push(userData.userId.userData.acadYear);
-
+console.log("ref ::",userData.userId.userData.sno) 
      sql = `SELECT amount1,amount2,amount3,feeType,catg from Feeses where stuRef=? and acadYear=? and status='active' and amount1 is not null`;
      pool.query(sql,feeByStuParams,function(err,feeByStuData){
         if (err) {
@@ -94,11 +89,6 @@ Stupayments.prototype = {
 
                 }
               
-       }else{
-        callback({
-          "code":200,
-         "success":"No data found in Feeses table for this student"
-        })
        }
     if(fee!=null && fee>0){
     incomeStuParams=[];
@@ -153,9 +143,20 @@ Stupayments.prototype = {
             })
          }
          else{
+          balance=fee-concs;
+            
+          studentFeeDet={
+            "fee":fee,
+            "concs":concs,
+            "paid":paid,
+            "balance":balance,
+            "stuRef":userData.userId.userData.sno
+          }
+
           callback({
             "code":200,
-           "success":"No data found in Income table for this student"
+           "success":"No data found in Income table for this student",
+           "feeData":studentFeeDet
           })
          }
      })
