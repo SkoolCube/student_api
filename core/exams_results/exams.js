@@ -23,6 +23,7 @@ Examdet.prototype = {
                   "failed":"error ocurred"
                 })
             }else{
+                if(examDetails!=null && examDetails!=''){
                 for(let exam = 0; exam < examDetails.length; exam++){
                     sql = `SELECT ettRef,subj,date,min,max,duration FROM GVTGRP0013_ett et,Subjects s WHERE et.subRef=s.sno AND examRef=?`;
                     pool.query(sql,examDetails[exam].examRef,function(err,exmTimeTblDetails){
@@ -32,15 +33,25 @@ Examdet.prototype = {
                               "failed":"error ocurred"
                             })
                         }else{
-                            callback({"code":200,
+                            if(exam+1==examDetails.length){
+                            callback({
+                            "code":200,
                             "success":"Exam Details Retrived Successfully",
                             "examDetails":examDetails[0],
                             "exmTimeTblDetails":exmTimeTblDetails
                         }); 
+                    }
                         }
                     })
                 }
-                
+            }
+            else{
+                callback({
+                    "code":200,
+                    "success":"Exam Details not found"
+                    
+                })
+            }
             }
             
         })

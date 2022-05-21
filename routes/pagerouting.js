@@ -11,13 +11,16 @@ const exams = require("../core/exams_results/exams");
 const stuAcadYear = require("../core/common/getStuYear");
 const stuatt=require("../core/stuatt/stuattendance");
 const stunotify=require("../core/common/stunotices");
-
+const stuonlinecls = require("../core/onlinecls/stuonlinecls");
+const events = require("../core/events/eventsdata.js");
 const user = new finduser();
 const stupaymentdetails = new stupayments();
 const exam = new exams();
 const stuYear = new stuAcadYear();
 const stuattdetails = new stuatt();
 const stunotices = new stunotify();
+const stuonlineclass=new stuonlinecls();
+const branchEvents=new events();
 //This function is to verify the token
 
 function verifyToken(req,res,next) {
@@ -91,8 +94,8 @@ router.get('/paymentDetails',verifyToken,(req,res,callback)=>{
 // Exam Details
 router.get('/exam',verifyToken,(req,res,callback)=>{
     stuYear.getStuAcadYear(req,res,function(acadResult){ 
-    acadResult['auth-token']=req.headers.authorization;
     exam.examDetails(acadResult,res,function(result){ 
+        acadResult['auth-token']=req.headers.authorization;
         res.send(result);
           
     })
@@ -118,6 +121,22 @@ router.get('/stuAttDetails',verifyToken,(req,res,callback)=>{
 router.get('/notify',verifyToken,(req,res,callback)=>{
     //Monthwise student attendance 
     stunotices.notices(req,res,function(result){ 
+        res.send(result)
+    })
+})
+
+//Student online class
+router.get('/onlinecls',verifyToken,(req,res,callback)=>{
+    stuonlineclass.onlinecls(req,res,function(result){  
+        result["auth-token"]=req.headers.authorization;
+        res.send(result)
+    })
+})
+
+//Events
+router.get('/eventsDet',verifyToken,(req,res,callback)=>{
+    branchEvents.events(req,res,function(result){  
+        result["auth-token"]=req.headers.authorization;
         res.send(result)
     })
 })
