@@ -9,6 +9,7 @@ Stupayments.prototype = {
     stufeedet : async function(userData, resp, callback){
         let feeByClsMap=new Map();
         let stuRecWiseMap=new Map();
+        let stuCatgWiseMap=new Map();
         let fee=0;
         let concs=0;
         let paid=0;
@@ -46,7 +47,6 @@ Stupayments.prototype = {
      feeByStuParams=[];
      feeByStuParams.push(userData.userId.userData.sno);
      feeByStuParams.push(userData.userId.userData.acadYear);
-console.log("ref ::",userData.userId.userData.sno) 
      sql = `SELECT amount1,amount2,amount3,feeType,catg from Feeses where stuRef=? and acadYear=? and status='active' and amount1 is not null`;
      pool.query(sql,feeByStuParams,function(err,feeByStuData){
         if (err) {
@@ -94,8 +94,9 @@ console.log("ref ::",userData.userId.userData.sno)
     incomeStuParams=[];
     incomeStuParams.push(userData.userId.userData.sno);
     incomeStuParams.push(userData.userId.userData.acadYear);
+    incomeStuParams.push(userData.userId.imsBean.imsData.finGrp);
    
-    sql = `SELECT catg,term,recNo,date,compId,payMode,SUM(id.amount+(id.amount*COALESCE(id.tax,0)/100)) as amount from Income i,Incomedetails id where i.sno=id.incRef and i.id=? and year=? and i.status='active' and id.status='active' and catg!='oth' group by recNo,catg,term`;
+    sql = `SELECT id.catg,id.term,recNo,i.date,i.compId,i.payMode,SUM(id.amount+(id.amount*COALESCE(id.tax,0)/100)) as amount,printHead from Income i,Incomedetails id,Feeheads f where i.sno=id.incRef and id.catg=f.catg and i.id=? and i.year=? and i.status='active' and id.status='active' and id.catg!='oth' and f.compId=? group by recNo,id.catg,id.term`;
      pool.query(sql,incomeStuParams,function(err,stuPaidDetails){
         if (err) {
             callback({
@@ -106,6 +107,7 @@ console.log("ref ::",userData.userId.userData.sno)
          else if(stuPaidDetails!=null && stuPaidDetails.length>0){
            let recwiseamt=0;
            let stuRecDateMap=new Map();
+           let catgWiseAmt=0;
             for(let stuInc=0;stuInc<stuPaidDetails.length;stuInc++){
                 paid+=stuPaidDetails[stuInc].amount;
                 recwiseamt=stuRecWiseMap.get(stuPaidDetails[stuInc].recNo);
@@ -113,7 +115,13 @@ console.log("ref ::",userData.userId.userData.sno)
                 recwiseamt=0;
                 stuRecWiseMap.set(stuPaidDetails[stuInc].recNo,recwiseamt+stuPaidDetails[stuInc].amount)
                 stuRecDateMap.set(stuPaidDetails[stuInc].recNo,date.format(stuPaidDetails[stuInc].date,'YYYY/MM/DD')+"~"+stuPaidDetails[stuInc].payMode)
+               
+                catgWiseAmt=stuCatgWiseMap.get(stuPaidDetails[stuInc].recNo+"~"+stuPaidDetails[stuInc].printHead);
+                if(catgWiseAmt==null)
+                catgWiseAmt=0;
+                stuCatgWiseMap.set(stuPaidDetails[stuInc].recNo+"~"+stuPaidDetails[stuInc].printHead,catgWiseAmt+stuPaidDetails[stuInc].amount)
               }
+
               var studentReceiptDet = []
               for(const [key,value] of stuRecWiseMap){
                  studentReceiptDet.push({
@@ -125,6 +133,17 @@ console.log("ref ::",userData.userId.userData.sno)
                  });
                 
               }
+
+              var studentCatgDet = []
+              for(const [key,value] of stuCatgWiseMap){
+                studentCatgDet.push({
+                  "receiptNo":key.split("~")[0], 
+                  "feehead":key.split("~")[1],
+                  "amount":value
+                 });
+                
+              }
+
             balance=fee-concs-paid;
             
             studentFeeDet={
@@ -139,7 +158,8 @@ console.log("ref ::",userData.userId.userData.sno)
               "code":200,
              "success":"Fetched data from Income table",
              "feeData":studentFeeDet,
-             "recieptWiseData":studentReceiptDet
+             "recieptWiseData":studentReceiptDet,
+             "studentCatgDet":studentCatgDet
             })
          }
          else{
