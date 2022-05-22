@@ -94,15 +94,15 @@ router.get('/paymentDetails',verifyToken,(req,res,callback)=>{
 // Exam Details
 router.get('/exam',verifyToken,(req,res,callback)=>{
     stuYear.getStuAcadYear(req,res,function(acadResult){ 
+    acadResult['auth-token']=req.headers.authorization;
+    acadResult['comp_id']=req.userId.userData.compId;
+    acadResult['finGrp_id']=req.userId.imsBean.imsData.finGrp;
     exam.examDetails(acadResult,res,function(result){ 
-        acadResult['auth-token']=req.headers.authorization;
         res.send(result);
           
     })
         
     })
-    
-    
 })
 //Student Attendance Details
 router.get('/stuAttDetails',verifyToken,(req,res,callback)=>{
