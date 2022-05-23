@@ -13,6 +13,7 @@ const stuatt=require("../core/stuatt/stuattendance");
 const stunotify=require("../core/common/stunotices");
 const stuonlinecls = require("../core/onlinecls/stuonlinecls");
 const events = require("../core/events/eventsdata.js");
+const stuTimeTable=require("../core/timetable/stutimetable")
 const user = new finduser();
 const stupaymentdetails = new stupayments();
 const exam = new exams();
@@ -21,6 +22,7 @@ const stuattdetails = new stuatt();
 const stunotices = new stunotify();
 const stuonlineclass=new stuonlinecls();
 const branchEvents=new events();
+const stuTT=new stuTimeTable();
 //This function is to verify the token
 
 function verifyToken(req,res,next) {
@@ -53,7 +55,9 @@ router.post('/login',(req,res,next)=>{
 try{
     result=null
 //login validation method
+console.log("userName :",req.body.userName)
 user.login(req.body.userName,req.body.password,function(result){ 
+    
     user.getImsbean(result.userData.compId,function(imsBean){
     //sendig response 
     if(result.code===200){
@@ -136,6 +140,13 @@ router.get('/onlinecls',verifyToken,(req,res,callback)=>{
 //Events
 router.get('/eventsDet',verifyToken,(req,res,callback)=>{
     branchEvents.events(req,res,function(result){  
+        result["auth-token"]=req.headers.authorization;
+        res.send(result)
+    })
+})
+
+router.get('/stutimetable',verifyToken,(req,res,callback)=>{
+    stuTT.gettimetable(req,res,function(result){
         result["auth-token"]=req.headers.authorization;
         res.send(result)
     })
