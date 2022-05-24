@@ -62,6 +62,7 @@ try{
     result=null
 //login validation method
 console.log("userName :",req.body.userName)
+if(req.body.userName!=null && req.body.userName!='' && req.body.password!=null && req.body.password!=''){
 user.login(req.body.userName,req.body.password,function(result){ 
     var currentTime = new Date()
     console.log("final check-4 ",date.format(currentTime,"YYYY-MM-DD HH:mm:ss"))
@@ -76,6 +77,13 @@ user.login(req.body.userName,req.body.password,function(result){
     }
 
 });
+}else{
+    result={
+        "code":400,
+        "success":"Username or password is empty"
+    }
+    res.send(result)
+}
     }catch(err){
         console.log("username&password empty",err);
 }
@@ -113,7 +121,7 @@ router.get('/exam',verifyToken,(req,res,callback)=>{
     })
 })
 //Student Attendance Details
-router.get('/stuAttDetails',verifyToken,(req,res,callback)=>{
+router.post('/stuAttDetails',verifyToken,(req,res,callback)=>{
     //Monthwise student attendance 
     stuattdetails.stuAttdet(req,res,function(result){ 
          //Yearwise student attendance 
