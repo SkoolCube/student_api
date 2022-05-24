@@ -26,6 +26,7 @@ Examdet.prototype = {
 
         let sql = await `SELECT examRef,exam,acr FROM Exams  WHERE dept=? AND cls=? AND sec=? AND acadYear=? `+COMP +` `+SPL_CATG_CODE;
         pool.query(sql,examParms,function(err,examDetails){
+            console.log("examDetails ::",examDetails)
             if (err) {
                 callback({
                   "code":400,
@@ -37,6 +38,7 @@ Examdet.prototype = {
 
                 let prevExamRef=0;
                 var exmIncr=0;
+                if(examDetails!=null && examDetails!=''){
                 for(let exam = 0; exam < examDetails.length; exam++){
                     sql = `SELECT ettRef,subj,date,min,max,duration FROM GVTGRP0013_ett et,Subjects s WHERE et.subRef=s.sno AND examRef=?`;
                     ettParams=[];
@@ -83,7 +85,13 @@ Examdet.prototype = {
                         }
                     })
                 }
-                
+            }
+            else{
+                callback({
+                    "code":200,
+                    "success":"Exam Details Not yet added",
+                         }); 
+            }
             }
             
         })

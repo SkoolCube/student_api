@@ -1,6 +1,7 @@
 const express=require("express");
 const convert = require('xml-js');
 const jwt = require('jsonwebtoken');
+const date = require('date-and-time')
 const dbconnect = require("../core/dbconnect");
 const router=express.Router();
 const bcrypt = require('bcrypt');
@@ -14,6 +15,9 @@ const stunotify=require("../core/common/stunotices");
 const stuonlinecls = require("../core/onlinecls/stuonlinecls");
 const events = require("../core/events/eventsdata.js");
 const stuTimeTable=require("../core/timetable/stutimetable")
+const stuhomework=require("../core/homework/stuhomework")
+const gallery=require("../core/gallery/galleryData")
+
 const user = new finduser();
 const stupaymentdetails = new stupayments();
 const exam = new exams();
@@ -23,6 +27,8 @@ const stunotices = new stunotify();
 const stuonlineclass=new stuonlinecls();
 const branchEvents=new events();
 const stuTT=new stuTimeTable();
+const stuHmw=new stuhomework();
+const galleryImg=new gallery();
 //This function is to verify the token
 
 function verifyToken(req,res,next) {
@@ -57,11 +63,10 @@ try{
 //login validation method
 console.log("userName :",req.body.userName)
 user.login(req.body.userName,req.body.password,function(result){ 
-    
-    user.getImsbean(result.userData.compId,function(imsBean){
+    var currentTime = new Date()
+    console.log("final check-4 ",date.format(currentTime,"YYYY-MM-DD HH:mm:ss"))
     //sendig response 
     if(result.code===200){
-        result["imsBean"]=imsBean; 
         let payload = {subject:result}
         token = jwt.sign(payload,'secreatkey');
         result["auth-token"]=token;
@@ -70,7 +75,6 @@ user.login(req.body.userName,req.body.password,function(result){
         res.send(result)
     }
 
-    });
 });
     }catch(err){
         console.log("username&password empty",err);
@@ -98,10 +102,10 @@ router.get('/paymentDetails',verifyToken,(req,res,callback)=>{
 // Exam Details
 router.get('/exam',verifyToken,(req,res,callback)=>{
     stuYear.getStuAcadYear(req,res,function(acadResult){ 
-    acadResult['auth-token']=req.headers.authorization;
     acadResult['comp_id']=req.userId.userData.compId;
-    acadResult['finGrp_id']=req.userId.imsBean.imsData.finGrp;
+    acadResult['finGrp_id']=req.userId.imsData.finGrp;
     exam.examDetails(acadResult,res,function(result){ 
+        result["auth-token"]=req.headers.authorization;
         res.send(result);
           
     })
@@ -147,6 +151,20 @@ router.get('/eventsDet',verifyToken,(req,res,callback)=>{
 
 router.get('/stutimetable',verifyToken,(req,res,callback)=>{
     stuTT.gettimetable(req,res,function(result){
+        result["auth-token"]=req.headers.authorization;
+        res.send(result)
+    })
+})
+
+router.get('/stuhomework',verifyToken,(req,res,callback)=>{
+    stuHmw.getStuHmw(req,res,function(result){
+        result["auth-token"]=req.headers.authorization;
+        res.send(result)
+    })
+})
+
+router.get('/getGallery',verifyToken,(req,res,callback)=>{
+    galleryImg.getGallery(req,res,function(result){
         result["auth-token"]=req.headers.authorization;
         res.send(result)
     })

@@ -7,14 +7,14 @@ function stutimetable(){
 stutimetable.prototype = {
     gettimetable : async function(userData, resp, callback){
         let sql = await `SELECT sno,subj,subjAcr from Subjects where compId=? `;
-    pool.query(sql,userData.userId.imsBean.imsData.finGrp,function(err,subjData){
+    pool.query(sql,userData.userId.imsData.finGrp,function(err,subjData){
         let subjMap=new Map();
         for(let i=0;i<subjData.length;i++){
             subjMap.set(subjData[i].sno,subjData[i].subj+"~"+subjData[i].subjAcr)
         }
         sql = `SELECT * from PeriodTimings where compId=? and acadYear=?`;
         periodParams=[];
-        periodParams.push(userData.userId.imsBean.imsData.finGrp)
+        periodParams.push(userData.userId.imsData.finGrp)
         periodParams.push(userData.userId.userData.acadYear)
         
     pool.query(sql,periodParams,function(err,periodTimingData){

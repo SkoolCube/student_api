@@ -1,6 +1,6 @@
 const pool=require('../dbconnect')
 const bcrypt = require('bcrypt');
-
+const date = require('date-and-time')
 
 function User() {};
 
@@ -8,8 +8,11 @@ User.prototype = {
     //login method
     login : async function(username, password, callback){
     //Query building 
-    let sql = await `SELECT c.cls as clsName,sec.section as secName,d.dept as deptName,s.sno,s.cls,s.sec,s.deptRef,s.compId,rollNo,nameF,nameL,mobF,fathName,gender,ph,dob,addr,nation,dateJ,email,marketSrc,followup,dateL,moles,hstl,trpt,uid,pwd,aadharNo,resvNo,feeCatg,s.acadYear,s.med,s.club,s.imgFolder FROM Students s,Classes c,Sections sec,Departments d WHERE uid = ? and s.cls=c.sno and s.sec=sec.sno and s.deptRef=d.sno and status='active'`;
+    var currentTime = new Date()
+    console.log("test-1 ::",date.format(currentTime,"YYYY-MM-DD HH:mm:ss"))
+    let sql = await `SELECT s.sno,s.cls,s.sec,s.deptRef,s.compId,rollNo,nameF,nameL,mobF,fathName,gender,ph,dob,addr,nation,dateJ,email,marketSrc,followup,dateL,moles,hstl,trpt,uid,pwd,aadharNo,resvNo,feeCatg,s.acadYear,s.med,s.club,s.imgFolder,mt as motherTongue,tcOldNo as oldTcNo FROM Students as s WHERE uid = ? and status='active'`;
     pool.query(sql,username,function(err,usrDet){
+      console.log("test-2 ",date.format(currentTime,"YYYY-MM-DD HH:mm:ss"))
         if (err) {
             callback({
               "code":400,
@@ -18,31 +21,12 @@ User.prototype = {
           }
         else{
         if(usrDet!=null && usrDet.length>0){
-            
-            // if(bcrypt.compareSync(password, usrDet[0].pwd)) {
-            //     // return his data.
-            //     callback({"code":200,
-            //     "success":"Login Successfull",
-            //     "userData":usrDet[0]});
-            // }  else{
-                callback({"code":200,
-                "success":"Login Successfull",
-                "userData":usrDet[0]});
-                // callback({"code":204,
-                // "success":"UserId and password does not match"})
-            // }
-        }else{
-        callback({"code":206,
-        "success":"User does not exits"})
-        }
-    }
-    })
-},
+              
+                console.log("final check-3 ",date.format(currentTime,"YYYY-MM-DD HH:mm:ss"))
 
-
-getImsbean : async function(compId,callback){
-    let sql = await `SELECT * FROM Ims WHERE custId = ?`;
-    pool.query(sql,compId,function(err,imsBean){
+    sql = `SELECT custId,finGrp,logType FROM Ims WHERE custId = ?`;
+    pool.query(sql,usrDet[0].compId,function(err,imsBean){
+      console.log("test-4 ",date.format(currentTime,"YYYY-MM-DD HH:mm:ss"))
         if (err) {
             callback({
               "code":400,
@@ -51,8 +35,53 @@ getImsbean : async function(compId,callback){
           }
         else{
         if(imsBean!=null && imsBean.length>0){
+          console.log("test-5 ",date.format(currentTime,"YYYY-MM-DD HH:mm:ss"))
+          sql="select compId as companyId,grpId,name,phNo,headName,mob,email,addr,city,imgFolder from Company where compId=?";
+          pool.query(sql,usrDet[0].compId,function(err,compBean){
+            console.log("test-6 ",date.format(currentTime,"YYYY-MM-DD HH:mm:ss"))
+            
+                callback({"code":200,
+                "success":"Login SuccessfullLogin Successfull",
+                "userData":usrDet[0],
+                "imsData":imsBean[0],
+                "compData":compBean[0]
+              });
+          })
+        }else{
+        callback({"code":206,
+        "success":"Ims data does not exits"})
+        }
+    }
+    })
+               
+        }else{
+        callback({
+        "code":206,
+        "success":"User does not exits"})
+        }
+    }
+    })
+},
+
+
+getImsbean : async function(compId,callback){
+  var currentTime = new Date()
+  console.log("test-3 ",date.format(currentTime,"YYYY-MM-DD HH:mm:ss"))
+    let sql = await `SELECT custId,finGrp,logType FROM Ims WHERE custId = ?`;
+    pool.query(sql,compId,function(err,imsBean){
+      console.log("test-4 ",date.format(currentTime,"YYYY-MM-DD HH:mm:ss"))
+        if (err) {
+            callback({
+              "code":400,
+              "failed":"error ocurred"
+            })
+          }
+        else{
+        if(imsBean!=null && imsBean.length>0){
+          console.log("test-5 ",date.format(currentTime,"YYYY-MM-DD HH:mm:ss"))
           sql="select compId as companyId,grpId,name,phNo,headName,mob,email,addr,city,imgFolder from Company where compId=?";
           pool.query(sql,compId,function(err,compBean){
+            console.log("test-6 ",date.format(currentTime,"YYYY-MM-DD HH:mm:ss"))
                 callback({"code":200,
                 "success":"Done",
                 "imsData":imsBean[0],

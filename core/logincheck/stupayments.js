@@ -18,7 +18,7 @@ Stupayments.prototype = {
     //Query building 
     
     feeByclsParams=[];
-    feeByclsParams.push(userData.userId.imsBean.imsData.finGrp);
+    feeByclsParams.push(userData.userId.imsData.finGrp);
     feeByclsParams.push(userData.userId.userData.cls);
     feeByclsParams.push(userData.userId.userData.sec);
     feeByclsParams.push(userData.userId.userData.deptRef);
@@ -95,7 +95,7 @@ Stupayments.prototype = {
     incomeStuParams=[];
     incomeStuParams.push(userData.userId.userData.sno);
     incomeStuParams.push(userData.userId.userData.acadYear);
-    incomeStuParams.push(userData.userId.imsBean.imsData.finGrp);
+    incomeStuParams.push(userData.userId.imsData.finGrp);
    
     sql = `SELECT id.catg,id.term,recNo,i.date,i.compId,i.payMode,SUM(id.amount+(id.amount*COALESCE(id.tax,0)/100)) as amount,printHead from Income i,Incomedetails id,Feeheads f where i.sno=id.incRef and id.catg=f.catg and i.id=? and i.year=? and i.status='active' and id.status='active' and id.catg!='oth' and f.compId=? group by recNo,id.catg,id.term`;
      pool.query(sql,incomeStuParams,function(err,stuPaidDetails){

@@ -125,7 +125,7 @@ Studentattendance.prototype = {
         var year = currentTime.getFullYear()
         var month = currentTime.getMonth() + 1
        let sql = `SELECT * from Acadyear where grpId=? and curtYear=1`;
-       pool.query(sql,stuData.userId.imsBean.imsData.finGrp,function(err,acadData){
+       pool.query(sql,stuData.userId.imsData.finGrp,function(err,acadData){
          year1=acadData[0].yearCode.split("-")[0]
          year2=acadData[0].yearCode.split("-")[1]
     for(let i=1;i<=12;i++){
