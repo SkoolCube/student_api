@@ -70,7 +70,8 @@ user.login(req.body.userName,req.body.password,function(result){
     if(result.code===200){
         let payload = {subject:result}
         token = jwt.sign(payload,'secreatkey');
-        result["auth-token"]=token;
+        result["auth_token"]=token;
+        console.log("final checking ",date.format(currentTime,"YYYY-MM-DD HH:mm:ss"))
         res.send(result);
     }else{
         res.send(result)
@@ -95,14 +96,14 @@ function getUserData(req,res,next){
 
 router.get('/stuprofile',verifyToken,(req,res,callback)=>{
     stupaymentdetails.stufeedet(req,res,function(result){ 
-        result['auth-token']=req.headers.authorization;
+        result['auth_token']=req.headers.authorization;
         res.send(result)
     })
 })
 
 router.get('/paymentDetails',verifyToken,(req,res,callback)=>{
     stupaymentdetails.stufeedet(req,res,function(result){ 
-        result['auth-token']=req.headers.authorization;
+        result['auth_token']=req.headers.authorization;
         res.send(result)
     })
 })
@@ -113,7 +114,7 @@ router.get('/exam',verifyToken,(req,res,callback)=>{
     acadResult['comp_id']=req.userId.userData.compId;
     acadResult['finGrp_id']=req.userId.imsData.finGrp;
     exam.examDetails(acadResult,res,function(result){ 
-        result["auth-token"]=req.headers.authorization;
+        result["auth_token"]=req.headers.authorization;
         res.send(result);
           
     })
@@ -127,7 +128,7 @@ router.post('/stuAttDetails',verifyToken,(req,res,callback)=>{
          //Yearwise student attendance 
         stuattdetails.stuYearAttdet(req,res,function(yearResult){
             result["yearWise"]=yearResult
-            result["auth-token"]=req.headers.authorization
+            result["auth_token"]=req.headers.authorization
             res.send(result)
         })
     })
@@ -144,7 +145,7 @@ router.get('/notify',verifyToken,(req,res,callback)=>{
 //Student online class
 router.get('/onlinecls',verifyToken,(req,res,callback)=>{
     stuonlineclass.onlinecls(req,res,function(result){  
-        result["auth-token"]=req.headers.authorization;
+        result["auth_token"]=req.headers.authorization;
         res.send(result)
     })
 })
@@ -152,28 +153,28 @@ router.get('/onlinecls',verifyToken,(req,res,callback)=>{
 //Events
 router.get('/eventsDet',verifyToken,(req,res,callback)=>{
     branchEvents.events(req,res,function(result){  
-        result["auth-token"]=req.headers.authorization;
+        result["auth_token"]=req.headers.authorization;
         res.send(result)
     })
 })
 
 router.get('/stutimetable',verifyToken,(req,res,callback)=>{
     stuTT.gettimetable(req,res,function(result){
-        result["auth-token"]=req.headers.authorization;
+        result["auth_token"]=req.headers.authorization;
         res.send(result)
     })
 })
 
 router.get('/stuhomework',verifyToken,(req,res,callback)=>{
     stuHmw.getStuHmw(req,res,function(result){
-        result["auth-token"]=req.headers.authorization;
+        result["auth_token"]=req.headers.authorization;
         res.send(result)
     })
 })
 
 router.get('/getGallery',verifyToken,(req,res,callback)=>{
     galleryImg.getGallery(req,res,function(result){
-        result["auth-token"]=req.headers.authorization;
+        result["auth_token"]=req.headers.authorization;
         res.send(result)
     })
 })
