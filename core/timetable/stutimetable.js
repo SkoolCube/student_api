@@ -19,10 +19,11 @@ stutimetable.prototype = {
         
     pool.query(sql,periodParams,function(err,periodTimingData){
         let periodMap=new Map();
+        if(periodTimingData!=null && periodTimingData!=''){
         for(let i=0;i<periodTimingData.length;i++){
             periodMap.set(periodTimingData[i].period,periodTimingData[i].perFrom+"~"+periodTimingData[i].perTo)
         }
-        sql = `SELECT day,period,subjRef,t.empId,firstName,lastName from TimeTableAlloc t,Employees e where t.empId=e.empId and branchId=? and sec=? and acadYear=?`;
+        sql = `SELECT day,period,subjRef,t.empId,firstName,lastName from TimeTableAlloc t,Employees e where t.empId=e.empId and branchId=? and sec=? and acadYear=? order by period`;
         timeTableParams=[];
         timeTableParams.push(userData.userId.userData.compId)
         timeTableParams.push(userData.userId.userData.club)
@@ -61,9 +62,14 @@ stutimetable.prototype = {
                "success":"No data found in Time table",
                   })
             }
-            
+        
     })
-
+        }else{
+            callback({
+                "code":200,
+               "success":"No data found in Period Timings",
+                  })
+        }
 
     })
 

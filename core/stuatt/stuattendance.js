@@ -1,6 +1,7 @@
 const pool=require('../dbconnect')
 const date = require('date-and-time')
 const res = require('express/lib/response')
+var moment = require('moment');
 function Studentattendance(){
 }
 
@@ -76,17 +77,23 @@ Studentattendance.prototype = {
               for(let i=0;i<holidayData.length;i++){
                 holidayCheckMap.set("day"+holidayData[i].day,"H~"+holidayData[i].notes) 
               }
-
+              
+              attDate=null;
               Object.keys(stuAttRespData).forEach(function(key) {
                 leaveType=null; 
                 holidayNote="";
+                attDate=year+"-"+month+"-"+key;
                 //console.log("holidayCheckMap :",holidayCheckMap.get("day"+key).split("~")[0]+" :: "+key)  
                 if(stuAttRespData[key]==='P')
                   leaveType=1;
+                 else if(moment(attDate).format('dddd')=='Sunday'){
+                  leaveType=4;
+                 } 
                 else if(holidayCheckMap.get("day"+key)!=null && holidayCheckMap.get("day"+key)!='undefined' && holidayCheckMap.get("day"+key).split("~")[0]==='H'){
                   leaveType=3;
                   holidayNote=holidayCheckMap.get("day"+key).split("~")[1];
-                 } else
+                }
+                 else
                   leaveType=2; 
                 stuAttRespArray.push({
                 "month":month,
@@ -189,10 +196,14 @@ Studentattendance.prototype = {
                 absent=0;
                 holiday=0;
                 Object.keys(stuAttRespYearData).forEach(function(key) {
+                  attDate=sql.split(" ")[3].substring(0, 4)+"-"+sql.split(" ")[3].substring(4, 6)+"-"+key;
                   if(stuAttRespYearData[key]==='P')
                     present++;
                   else if(stuAttRespYearData[key]==='H')
                     holiday++;
+                  else if(moment(attDate).format('dddd')=='Sunday'){
+                      leaveType=4;
+                    } 
                   else
                     absent++;
 

@@ -17,7 +17,7 @@ const events = require("../core/events/eventsdata.js");
 const stuTimeTable=require("../core/timetable/stutimetable")
 const stuhomework=require("../core/homework/stuhomework")
 const gallery=require("../core/gallery/galleryData")
-
+const elearning=require("../core/elearning/elearningLinks")
 const user = new finduser();
 const stupaymentdetails = new stupayments();
 const exam = new exams();
@@ -29,6 +29,7 @@ const branchEvents=new events();
 const stuTT=new stuTimeTable();
 const stuHmw=new stuhomework();
 const galleryImg=new gallery();
+const elearningVar=new elearning();
 //This function is to verify the token
 
 function verifyToken(req,res,next) {
@@ -61,7 +62,7 @@ router.post('/login',(req,res,next)=>{
 try{
     result=null
 //login validation method
-console.log("userName :",req.body.userName)
+console.log("userName-1 :",req.body.userName)
 if(req.body.userName!=null && req.body.userName!='' && req.body.password!=null && req.body.password!=''){
 user.login(req.body.userName,req.body.password,function(result){ 
     var currentTime = new Date()
@@ -73,6 +74,7 @@ user.login(req.body.userName,req.body.password,function(result){
         result["auth_token"]=token;
         console.log("final checking ",date.format(currentTime,"YYYY-MM-DD HH:mm:ss"))
         res.send(result);
+        console.log("final checking-2 ",date.format(currentTime,"YYYY-MM-DD HH:mm:ss"))
     }else{
         res.send(result)
     }
@@ -174,6 +176,13 @@ router.get('/stuhomework',verifyToken,(req,res,callback)=>{
 
 router.get('/getGallery',verifyToken,(req,res,callback)=>{
     galleryImg.getGallery(req,res,function(result){
+        result["auth_token"]=req.headers.authorization;
+        res.send(result)
+    })
+})
+
+router.get('/elearningLinks',verifyToken,(req,res,callback)=>{
+    elearningVar.getElearning(req,res,function(result){
         result["auth_token"]=req.headers.authorization;
         res.send(result)
     })

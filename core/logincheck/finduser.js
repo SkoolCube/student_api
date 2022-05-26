@@ -6,11 +6,11 @@ function User() {};
 
 User.prototype = {
     //login method
-    login : async function(username, password, callback){
+    login : function(username, password, callback){
     //Query building 
     var currentTime = new Date()
     console.log("test-1 ::",date.format(currentTime,"YYYY-MM-DD HH:mm:ss"))
-    let sql = await `SELECT s.sno,s.cls,s.sec,s.deptRef,s.compId,rollNo,nameF,nameL,mobF,fathName,gender,ph,dob,addr,nation,dateJ,email,marketSrc,followup,dateL,moles,hstl,trpt,uid,pwd,aadharNo,resvNo,feeCatg,s.acadYear,s.med,s.club,s.imgFolder,mt as motherTongue,tcOldNo as oldTcNo FROM Students as s WHERE uid = ? and status='active'`;
+    let sql = `SELECT s.sno,s.cls,s.sec,s.deptRef,s.compId,rollNo,nameF,nameL,mobF,fathName,gender,ph,dob,addr,nation,dateJ,email,marketSrc,followup,dateL,moles,hstl,trpt,uid,pwd,aadharNo,resvNo,feeCatg,s.acadYear,s.med,s.club,s.imgFolder,mt as motherTongue,tcOldNo as oldTcNo FROM Students as s WHERE uid = ? and status='active'`;
     pool.query(sql,username,function(err,usrDet){
       console.log("test-2 ",date.format(currentTime,"YYYY-MM-DD HH:mm:ss"))
         if (err) {
@@ -39,13 +39,45 @@ User.prototype = {
           sql="select compId as companyId,grpId,name,phNo,headName,mob,email,addr,city,imgFolder from Company where compId=?";
           pool.query(sql,usrDet[0].compId,function(err,compBean){
             console.log("test-6 ",date.format(currentTime,"YYYY-MM-DD HH:mm:ss"))
-            
+            stuClassData=[];
+            var clsName ="0";
+              if(usrDet[0]['cls']==1675)
+              clsName="Junior Inter";
+              else if(usrDet[0]['cls']==1732)
+              clsName="Senior Inter";
+              else if(usrDet[0]['cls']==7777)
+              clsName="1st Year";
+              else if(usrDet[0]['cls']==7778)
+              clsName="2nd Year";
+              else if(usrDet[0]['cls']==2834)
+              clsName="3rd Year";
+              else if(usrDet[0]['cls']==6054)
+              clsName="Foundation";
+              else if(usrDet[0]['cls']==7776)
+              clsName="CMA-Inter";
+              else if(usrDet[0]['cls']==7785)
+              clsName="CA-Inter";
+              else if(usrDet[0]['cls']==7780)
+              clsName="Senior PU";
+              else if(usrDet[0]['cls']==7779)
+              clsName="Junior PU";
+
+              sql="select section from Sections where sno=?";
+              pool.query(sql,usrDet[0].sec,function(err,secData){
+                console.log("test in sec ",date.format(currentTime,"YYYY-MM-DD HH:mm:ss"))
+                stuData={
+                  "clsName":clsName,
+                  "secName":secData[0].section
+                }
                 callback({"code":200,
                 "success":"Login SuccessfullLogin Successfull",
                 "userData":usrDet[0],
                 "imsData":imsBean[0],
-                "compData":compBean[0]
+                "compData":compBean[0],
+                "stuDetails":stuData
               });
+
+              })
           })
         }else{
         callback({"code":206,
