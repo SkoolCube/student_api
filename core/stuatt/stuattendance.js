@@ -7,6 +7,7 @@ function Studentattendance(){
 
 Studentattendance.prototype = {
     stuAttdet : async function(stuData, resp, callback){
+      daysInMonth=[0,31,28,31,30,31,30,31,31,30,31,30,31] 
         var currentTime = new Date()
         var year = currentTime.getFullYear()
         var month = currentTime.getMonth() + 1
@@ -64,7 +65,14 @@ Studentattendance.prototype = {
                     "31":stuAttData[0].att31
                   }
 
-               
+                    if(month==2){
+                    delete stuAttRespData["29"]
+                    delete stuAttRespData["30"]
+                    delete stuAttRespData["31"]
+                    }
+                    else if(month==4 || month==6 || month==9 || month==11)
+                    delete stuAttRespData["31"]
+
               leaveType=null; 
               holidayParams=[];
               holidayParams.push(stuData.userId.userData.compId)
@@ -135,6 +143,7 @@ Studentattendance.prototype = {
        pool.query(sql,stuData.userId.imsData.finGrp,function(err,acadData){
          year1=acadData[0].yearCode.split("-")[0]
          year2=acadData[0].yearCode.split("-")[1]
+         var totPres=0;
     for(let i=1;i<=12;i++){
      let present=0;
      let absent=0;
@@ -192,32 +201,44 @@ Studentattendance.prototype = {
                   "30":stuAttData[0].att30,
                   "31":stuAttData[0].att31
                 }
+               
                 present=0;
                 absent=0;
                 holiday=0;
+                weekOff=0;
+                var check='true';
                 Object.keys(stuAttRespYearData).forEach(function(key) {
+                  check='true';
+                  if(sql.split(" ")[3].substring(4, 6)=='02' && ( key=='31' || key=='30' || key=='29')  ){
+                    check='false';
+                    }
+                    else if(key=='31' && (sql.split(" ")[3].substring(4, 6)=='04' || sql.split(" ")[3].substring(4, 6)=='06' || sql.split(" ")[3].substring(4, 6)=='09' || sql.split(" ")[3].substring(4, 6)=='11')){
+                      check='false';
+                    }
+                    if(check=='true'){
                   attDate=sql.split(" ")[3].substring(0, 4)+"-"+sql.split(" ")[3].substring(4, 6)+"-"+key;
                   if(stuAttRespYearData[key]==='P')
                     present++;
                   else if(stuAttRespYearData[key]==='H')
                     holiday++;
                   else if(moment(attDate).format('dddd')=='Sunday'){
-                      leaveType=4;
+                    weekOff++;
                     } 
                   else
                     absent++;
-
+                  }
                 })
-
+               
                 yearWiseStuAtt.push({
                   "year":sql.split(" ")[3].substring(0, 4),
                   "month":sql.split(" ")[3].substring(4, 6),
                   "present":present,
                   "absent":absent,
                   "holiday":holiday,
+                  "weekoff":weekOff,
                   "total":present+absent
                 })
-
+                totPres=totPres+present
               }
 
       if(totIncr===12){
@@ -225,7 +246,8 @@ Studentattendance.prototype = {
                 "code":200,
                "success":"Done",
                "yearWiseStuAtt":yearWiseStuAtt,
-               "acadyear":acadData[0].yearCode
+               "acadyear":acadData[0].yearCode,
+               "totPres":totPres
               })
             }
       })

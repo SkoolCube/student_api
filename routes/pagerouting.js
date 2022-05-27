@@ -18,6 +18,7 @@ const stuTimeTable=require("../core/timetable/stutimetable")
 const stuhomework=require("../core/homework/stuhomework")
 const gallery=require("../core/gallery/galleryData")
 const elearning=require("../core/elearning/elearningLinks")
+const homescreen=require("../core/common/homescreendata")
 const user = new finduser();
 const stupaymentdetails = new stupayments();
 const exam = new exams();
@@ -30,6 +31,7 @@ const stuTT=new stuTimeTable();
 const stuHmw=new stuhomework();
 const galleryImg=new gallery();
 const elearningVar=new elearning();
+const hs=new homescreen();
 //This function is to verify the token
 
 function verifyToken(req,res,next) {
@@ -112,6 +114,8 @@ router.get('/paymentDetails',verifyToken,(req,res,callback)=>{
 
 // Exam Details
 router.get('/exam',verifyToken,(req,res,callback)=>{
+    if(req.body.acadYear==null || req.body.acadYear=='undefined')
+    req.body.acadYear=req.userId.userData.acadYear;
     stuYear.getStuAcadYear(req,res,function(acadResult){ 
     acadResult['comp_id']=req.userId.userData.compId;
     acadResult['finGrp_id']=req.userId.imsData.finGrp;
@@ -185,6 +189,18 @@ router.get('/elearningLinks',verifyToken,(req,res,callback)=>{
     elearningVar.getElearning(req,res,function(result){
         result["auth_token"]=req.headers.authorization;
         res.send(result)
+    })
+})
+
+router.get('/homescreendet',verifyToken,(req,res,callback)=>{
+    hs.getHomescreenData(req,res,function(result){
+        stuattdetails.stuYearAttdet(req,res,function(yearResult){
+         if(yearResult!=null && yearResult!='' && yearResult["totPres"]!=null)   
+        result["attPerc"]=yearResult["totPres"]*100/365
+        
+        result["auth-token"]=req.headers.authorization;
+        res.send(result)
+        })
     })
 })
 
