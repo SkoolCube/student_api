@@ -31,7 +31,7 @@ Examdet.prototype = {
                   "code":400,
                   "failed":"error ocurred in exam query"
                 })
-            }else{
+            }else if(examDetails!=null && examDetails!=''){
                 
                 examFinalData=[];
 
@@ -88,7 +88,6 @@ Examdet.prototype = {
                                     "marks":marks
                                 })
                             }
-                            if(examDetails[exam].examRef==790)
                             perc=examWiseTot*100/maxMarks;
                             if(perc>=75)
                             grade="A"
@@ -126,6 +125,11 @@ Examdet.prototype = {
                     })
                 }
                 
+            }
+            else{
+                callback({"code":200,
+                             "success":"Exam Details not Added"
+                          }); 
             }
             
         })

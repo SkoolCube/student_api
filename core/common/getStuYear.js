@@ -7,7 +7,6 @@ StuYear.prototype = {
         stuDet = [];
         let sql = await `SELECT * FROM Acadyear WHERE sno=?`;
         pool.query(sql,userData.body.acadYear,function(err,acadYearDetails){
-          console.log("acadYearDetails :::",acadYearDetails)
             if (err) {
                 callback({
                   "code":400,
@@ -24,7 +23,6 @@ StuYear.prototype = {
                     let tableName = stuDyTab+"_students";
                     sql =  `SELECT dept,cls,sec,fc,stuRef FROM ${tableName} WHERE stuRef=?`;
                     pool.query(sql,userData.userId.userData.sno,function(err,stuDynamicDetails){
-                      console.log("stuDynamicDetails ::"+stuDynamicDetails) 
                       if (err) {
                         callback({
                           "code":400,
@@ -33,7 +31,6 @@ StuYear.prototype = {
                       }else{
                       sql = `SELECT catg from Feeses where stuRef=? and acadYear=? and status='active' and feeType='fee'`;
                       pool.query(sql,stuDet,function(err,specialFee){
-                        console.log("specialFee[0].catg::",specialFee);
                         if (err) {
                           callback({
                             "code":400,
