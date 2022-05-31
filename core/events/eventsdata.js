@@ -6,7 +6,7 @@ function branchevents(){
 branchevents.prototype = {
     events : async function(studata, resp, callback){
 
-        let sql = await `SELECT dateFrom,dateTo,eventName,eventDescr from Events where compId=? order by dateTo desc`;
+        let sql = await `SELECT eventRef,dateFrom,dateTo,eventName,eventDescr,imgFolder from Events where compId=? and status='active' order by dateTo desc`;
         pool.query(sql,studata.userId.userData.compId,function(err,eventData){
 
             if (err) {
