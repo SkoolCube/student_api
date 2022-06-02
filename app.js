@@ -27,10 +27,10 @@ app.use(cors())
 
 
 app.use('/', pageRouter);
-    var server = app.listen(app.get('port'),app.get('host'),()=>{
+    var server = app.listen(app.get('port'),'0.0.0.0',()=>{
     var host = server.address().address
     var port = server.address().port
-    console.log("Example app listening at http://%s:%s", host, port)
+    console.log("Example app listening at http://%s:%s", process.env.HOST, port)
     });
 
 module.exports=app;
